@@ -387,6 +387,7 @@ $.Autocompleter = function(input, options) {
 				port: "autocomplete" + input.name,
 				dataType: options.dataType,
 				url: options.url,
+				type : 'post',
 				data: $.extend({
 					q: lastWord(term),
 					limit: options.max
@@ -411,18 +412,29 @@ $.Autocompleter = function(input, options) {
 
 	function parse(data) {
 		var parsed = [];
-		var rows = data.split("\n");
-		for (var i=0; i < rows.length; i++) {
-			var row = $.trim(rows[i]);
-			if (row) {
-				row = row.split("|");
+		if(data.length){
+			for (var i=0; i < data.length; i++) {
 				parsed[parsed.length] = {
-					data: row,
-					value: row[0],
-					result: options.formatResult && options.formatResult(row, row[0]) || row[0]
+						data: data[i],
+						value: options.formatItem && options.formatItem(data[i], i+1, data[i].length)  || data[i],
+						result: options.formatResult && options.formatResult(data[i])  || data[i]
 				};
 			}
+		}else{
+			var rows = data.split("\n");
+			for (var i=0; i < rows.length; i++) {
+				var row = $.trim(rows[i]);
+				if (row) {
+					row = row.split("|");
+					parsed[parsed.length] = {
+						data: row,
+						value: row[0],
+						result: options.formatResult && options.formatResult(row, row[0]) || row[0]
+					};
+				}
+			}
 		}
+		
 		return parsed;
 	};
 
